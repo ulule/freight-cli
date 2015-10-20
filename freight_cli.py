@@ -11,6 +11,7 @@ from time import sleep
 
 Task = namedtuple('Task', ['app', 'env', 'number'])
 
+
 class ApiError(Exception):
     def __init__(self, code, error=None, error_name=None):
         self.code = code
@@ -113,13 +114,35 @@ def deploy(api, app, env, ref, force):
         'app': app,
         'user': api.user,
         'force': force,
+        'params': '{"task": "deploy"}'
     }
     if env:
         params['env'] = env
     if ref:
         params['ref'] = ref
+
     data = api.post('/tasks/', params)
-    print('Created new Task: {}'.format(data.get('name', data['id'])))
+    print('Created new deploy Task: {}'.format(data.get('name', data['id'])))
+
+
+@cli.command()
+@click.argument('app', required=True)
+@click.option('--env', '-e', default=None)
+@click.option('--force', '-f', default=False, is_flag=True)
+@pass_api
+def rollback(api, app, env, ref, force):
+    params = {
+        'app': app,
+        'user': api.user,
+        'force': force,
+        'params': '{"task": "deploy"}',
+        'ref': ':previous'
+    }
+    if env:
+        params['env'] = env
+
+    data = api.post('/tasks/', params)
+    print('Created new rollback Task: {}'.format(data.get('name', data['id'])))
 
 
 @cli.command()
