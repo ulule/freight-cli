@@ -130,7 +130,7 @@ def deploy(api, app, env, ref, force):
 @click.option('--env', '-e', default=None)
 @click.option('--force', '-f', default=False, is_flag=True)
 @pass_api
-def rollback(api, app, env, ref, force):
+def rollback(api, app, env, force):
     params = {
         'app': app,
         'user': api.user,
