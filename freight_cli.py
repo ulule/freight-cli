@@ -128,6 +128,28 @@ def deploy(api, app, env, ref, force):
 @cli.command()
 @click.argument('app', required=True)
 @click.option('--env', '-e', default=None)
+@click.option('--ref', '-r', default=None)
+@click.option('--force', '-f', default=False, is_flag=True)
+@pass_api
+def release(api, app, env, ref, force):
+    params = {
+        'app': app,
+        'user': api.user,
+        'force': force,
+        'params': '{"task": "release"}'
+    }
+    if env:
+        params['env'] = env
+    if ref:
+        params['ref'] = ref
+
+    data = api.post('/tasks/', params)
+    print('Created new release Task: {}'.format(data.get('name', data['id'])))
+
+
+@cli.command()
+@click.argument('app', required=True)
+@click.option('--env', '-e', default=None)
 @click.option('--force', '-f', default=False, is_flag=True)
 @pass_api
 def rollback(api, app, env, force):
